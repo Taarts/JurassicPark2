@@ -9,7 +9,7 @@ namespace JurassicPark2
     {
         public string Name { get; set; }
         public string Diet { get; set; }
-        public DateTime WhenAcquired { get; set; }
+        public DateTime WhenAcquired = DateTime.Now;
         public int Weight { get; set; }
         public int EnclosureNumber { get; set; }
 
@@ -54,85 +54,136 @@ namespace JurassicPark2
             var dinosaursList = new List<Dinosaur>();
             Console.WriteLine();
             // Create MENU
-            Console.WriteLine("What would you like to do?\n To (V)iew the List in the park?\n To (A)dd a new Dinosaur to the park?\n to (R)emove a Dinosaur from the Park?\n To (T)ransfer a Dinosaur to another Enclosure?\n To (S)ummarize all the Dinosaurs we have?\n Or (Q)uit");
-            // Console.WriteLine("This works");
-
-            // Create method to describe class
-
-            // to (V)iew
-            var userAnswer = Console.ReadLine().ToUpper();
-            if (userAnswer == "V")
+            var keepGoing = true;
+            while (keepGoing)
             {
-                foreach (var Dinosaur in dinosaursList)
+
+                var userAnswer = PromptForString("What would you like to do?\n To (V)iew the List in the park?\n To (A)dd a new Dinosaur to the park?\n to (R)emove a Dinosaur from the Park?\n To (T)ransfer a Dinosaur to another Enclosure?\n To (S)ummarize all the Dinosaurs we have?\n Or (Q)uit");
+                // Console.WriteLine("This works");
+                // Create method to describe class
+                // private static void ViewDinosaur()
+                // to (V)iew
+                if (userAnswer == "V")
                 {
-                    Dinosaur.DisplayDinosaur();
+                    var nameOrEnclosure = PromptForString("Would you like to view the Dinosaurs in order of (N)ame or (E)nclosure? ");
+                    if (nameOrEnclosure == "N")
+                    {
+                        var sortedByName = dinosaursList.OrderBy(dino => dino.Name);
+
+                        foreach (var name in sortedByName)
+                        {
+                            Console.WriteLine(name.DisplayDinosaur());
+                        }
+                    }
+
+                    else
+                      if (nameOrEnclosure == "E")
+                    {
+                        var sortedByEnclosure = dinosaursList.OrderBy(dino => dino.EnclosureNumber);
+
+                        foreach (var name in sortedByEnclosure)
+                        {
+                            Console.WriteLine(name.DisplayDinosaur());
+                        }
+                        foreach (var Dinosaur in dinosaursList)
+                        {
+                            Dinosaur.DisplayDinosaur();
+                        }
+                    }
                 }
+                // need to make a loop to go back if they 
+                else
+                    // to (A)dd
+                    if (userAnswer == "A")
+                {
+                    var dino = new Dinosaur();
+
+                    dino.Name = PromptForString("What is the name of the species you'd like to add? ");
+                    dino.Diet = PromptForString("Is it a (C)arnivore or an (H)erbivore? ");
+                    dino.Weight = PromptForInteger("How much does it weigh? ");
+                    dino.EnclosureNumber = PromptForInteger("Which Enclosure do you want to put the beastie in? ");
+
+                    dinosaursList.Add(dino);
+                }
+                else
+                  // to (R)emove
+                  if (userAnswer == "R")
+                {
+                    var dinoToRemove = PromptForString("What is the name of the species you'd like to remove? ");
+
+                    Dinosaur foundDinosaur = dinosaursList.Find(dino => dino.Name == dinoToRemove);
+
+                    if (dinoToRemove == null)
+                    {
+                        Console.WriteLine("No Match Found - sucker!");
+                    }
+                    else
+                    {
+                        var posNeg = PromptForString($"Are you sure you want to remove {foundDinosaur.Name}? Y/N");
+                        {
+                            if (posNeg == "Y")
+                            {
+                                dinosaursList.Remove(foundDinosaur);
+                            }
+                        }
+                    }
+                }
+
+                else
+                       if (userAnswer == "T")
+                {
+                    var dinoToTransfer = PromptForString("What is the name of the species you'd like to transfer? ");
+
+                    Dinosaur foundDinosaur = dinosaursList.Find(dino => dino.Name == dinoToTransfer);
+
+                    if (dinoToTransfer == null)
+                    {
+                        Console.WriteLine("Dini dini... oh we don't have that dino!");
+                    }
+                    else
+                    {
+                        var posNeg = PromptForString($"Are you sure you want to transfer {foundDinosaur.Name} from {foundDinosaur.EnclosureNumber}? Y/N");
+                        {
+                            if (posNeg == "Y")
+                            {
+                                var newEnclosure = PromptForInteger($"Which enclosure number do you want to move {foundDinosaur.Name} to? ");
+
+                                foundDinosaur.EnclosureNumber = newEnclosure;
+                            }
+                        }
+                    }
+                }
+                // to (S)ummarize
+                else
+                    if (userAnswer == "S")
+                {
+                    var carnivoreTotal = 0;
+                    var herbivoreTotal = 0;
+
+                    foreach (var dinoEntry in dinosaursList)
+                    {
+                        if (dinoEntry.Diet == "C")
+                        {
+                            carnivoreTotal += 1;
+                        }
+
+                        else
+                      if (dinoEntry.Diet == "H")
+                        {
+                            herbivoreTotal += 1;
+                        }
+                    }
+                    Console.WriteLine($"There are {carnivoreTotal} carnivores. ");
+                    Console.WriteLine($"There are {herbivoreTotal} herbivores. ");
+
+                }
+                if (userAnswer == "Q")
+                {
+                    keepGoing = false;
+                }
+                // go back to the menu to repeat or choose another option.
+
             }
-            else
-            if (userAnswer == "A")
-            {
-                var dino = new Dinosaur();
-
-                dino.Name = PromptForString("What is the name of the species you'd like to add? ");
-                dino.Diet = PromptForString("Is it a (C)arnivore or an (H)erbivore? ");
-                dino.Weight = PromptForInteger("How much does it weigh? ");
-                dino.EnclosureNumber = PromptForInteger("Which Enclosure do you want to put the beastie in? ");
-
-                dinosaursList.Add(dino);
-            }
-            // create a for loop to show dinosaur based on Name &/or EnclosureNumber.
-            // "if" no List - "There are no List in the Park."
-
-            // to (A)dd
-            // Prompt User for:
-            // ¿ wh is the name of the species ?
-            // answer - name
-            // ¿ wh does it eat ?
-            // answer - Diet type - Jonathon/Tricia
-            // - WhenAcquired - dateTime stamp
-            // ¿ hw much does it weigh ?
-            // answer - Weight
-            // ¿ wh is the enclosure number ?
-            // answer - EnclosureNumber
-
-            // to (R)emove
-            // Prompt user for:
-            // ¿ wh Name of Dinosaur they want to remove ?
-            // - answer
-            // Dinosaur present
-            // ¿ Are you sure ?
-            // Y - delete dino
-            // print summary of Dinos we have left
-            // N - go back to menu
-
-            // not present
-            // "We don't have that dinosaur, try again"
-
-            // to (T)ransfer
-            // Prompt user for:
-            // ¿ wh dino do you want to move ?
-            // Dinosaur present
-            // ¿ wh EnclosureNumber do you want move {Name} to ?
-            // not present
-            // "We don't have that dinosaur, try again"
-
-            // to (S)ummarize
-            // var carnivoreTotal = 0;
-            // var herbivoreTotal = 0;
-
-            // if (Dinosaur.Diet = carnivoreTotal)
-            // {
-            //   carnivoreTotal += 1;
-            // }
-            // else
-            // {
-            //   herbivoreTotal += 1;
-            // }
-            // Console.WriteLine("There are {carnivoreTotal} carnivores. ");
-            // Console.WriteLine("There are {herbivoreTotal} herbivores. ");
-
-            // to (Q)uit
-            // go back to the menu to repeat or choose another option.
         }
     }
 }
